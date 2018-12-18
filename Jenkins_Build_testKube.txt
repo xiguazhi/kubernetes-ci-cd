@@ -1,0 +1,8 @@
+docker build -t 127.0.0.1:30400/jenkins:latest -f applications/jenkins/Dockerfile applications/jenkins
+docker build -t socat-registry -f applications/socat/Dockerfile applications/socat 
+docker stop socat-registry; docker rm socat-registry; docker run -d -e "REG_IP='172.29.231.89'" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry
+docker push 127.0.0.1:30400/jenkins:latest
+docker stop socat-registry
+kubectl apply -f manifests/jenkins.yml; kubectl rollout status deployment/jenkin
+kubectl exec -it $(kubectl get pods --selector=app=jenkins --output=jsonpath='{.items..metadata.name}') cat /var/jenkins_home/secrets/initialAdminPassword
+minikube service jenkinskubectl exec -it 
